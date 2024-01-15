@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "adsapi"
+version = "0.1.0"
+description = "API with Django Rest Framework (DRF) for a classified ads site"
+authors = ["Daniel Alejandro Leyva Perez <82961309+daniellp99@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+djangorestframework = "^3.14.0"
+markdown = "^3.5.2"
+django-filter = "^23.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
