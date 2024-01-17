@@ -14,7 +14,6 @@ class Advertisement(models.Model):
         max_length=200,
     )
     description = models.TextField()
-    category = models.ForeignKey("Category", on_delete=models.CASCADE)
     publication_date = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
