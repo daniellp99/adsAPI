@@ -16,7 +16,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ["id", "title", "description", "category", "owner"]
+        fields = ["id", "title", "description", "price", "category", "owner"]
 
 
 class UserSerializer(serializers.ModelSerializer):
