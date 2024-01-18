@@ -11,12 +11,13 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
-    category = CategorySerializer().read_only
-    owner = serializers.ReadOnlyField(source="owner.username")
+    url = serializers.HyperlinkedIdentityField(
+        view_name="advertisement-detail", lookup_field="pk"
+    )
 
     class Meta:
         model = Advertisement
-        fields = ["id", "title", "description", "price", "category", "owner"]
+        fields = ["title", "description", "price", "publication_date", "url"]
 
 
 class UserSerializer(serializers.ModelSerializer):
