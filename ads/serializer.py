@@ -10,10 +10,16 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
+class PublicationDateField(serializers.Field):
+    def to_representation(self, value):
+        return value.strftime("%B %d, %Y")
+
+
 class AdvertisementSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="advertisement-detail", lookup_field="pk"
     )
+    publication_date = PublicationDateField()
 
     class Meta:
         model = Advertisement
