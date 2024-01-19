@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 from ads.models import Advertisement, Category
 from ads.permissions import IsOwnerOrReadOnly
@@ -10,8 +14,40 @@ from ads.serializer import (
     AdvertisementSerializer,
     AdvertisementStatusSerializer,
     CategorySerializer,
-    UserSerializer,
+    MyTokenObtainPairSerializer,
+    ProfileSerializer,
+    RegisterSerializer,
 )
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+
+# Register User
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RegisterSerializer
+
+
+# api/profile  and api/profile/update
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def getProfile(request):
+    user = request.user
+    serializer = ProfileSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+@api_view(["PUT"])
+@permission_classes([permissions.IsAuthenticated])
+def updateProfile(request):
+    user = request.user
+    serializer = ProfileSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
 
 
 class CategoryList(generics.ListCreateAPIView):
@@ -82,13 +118,3 @@ class AdvertisementDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdvertisementDetailSerializer
 
     permission_classes = [IsOwnerOrReadOnly]
-
-
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer

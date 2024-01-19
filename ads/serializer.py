@@ -1,7 +1,55 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from ads.models import Advertisement, Category
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token["username"] = user.username
+        # ...
+
+        return token
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password]
+    )
+    password2 = serializers.CharField(write_only=True, required=True)
+    email = serializers.EmailField(
+        required=True, validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password", "password2")
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["password2"]:
+            raise serializers.ValidationError(
+                {"password": "Password fields didn't match."}
+            )
+
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data["username"],
+            email=validated_data["email"],
+        )
+
+        user.set_password(validated_data["password"])
+        user.save()
+
+        return user
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -28,9 +76,27 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             "description",
             "category",
             "price",
+            "owner",
             "publication_date",
             "url",
         ]
+        read_only_fields = ["user"]
+
+    def create(self, validated_data):
+        validated_data["user"] = self.context["request"].user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data["user"] = self.context["request"].user
+        return super().update(instance, validated_data)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    advertisements = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ["email", "username", "advertisements"]
 
 
 class AdvertisementModerationSerializer(serializers.ModelSerializer):
@@ -79,13 +145,3 @@ class AdvertisementDetailSerializer(serializers.ModelSerializer):
             "category",
         ]
         read_only_fields = ["status"]
-
-
-class UserSerializer(serializers.ModelSerializer):
-    advertisements = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Advertisement.objects.all()
-    )
-
-    class Meta:
-        model = User
-        fields = ["id", "username", "advertisements"]
