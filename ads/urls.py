@@ -21,6 +21,11 @@ urlpatterns = [
         views.AdvertisementDetail.as_view(),
         name="advertisement-detail",
     ),
+    path(
+        "advertisement/<int:pk>/comment/",
+        views.CommentCreateView.as_view(),
+        name="ad_comment",
+    ),
     # User Ads
     path("my-advertisements/", views.AdvertisementList.as_view()),
     path(

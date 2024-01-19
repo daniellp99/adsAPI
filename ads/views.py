@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 
 from ads.models import Advertisement, Category
 from ads.permissions import IsOwnerOrReadOnly
@@ -14,6 +14,7 @@ from ads.serializer import (
     AdvertisementSerializer,
     AdvertisementStatusSerializer,
     CategorySerializer,
+    CommentSerializer,
     MyTokenObtainPairSerializer,
     ProfileSerializer,
     RegisterSerializer,
@@ -118,3 +119,13 @@ class AdvertisementDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdvertisementDetailSerializer
 
     permission_classes = [IsOwnerOrReadOnly]
+
+
+class CommentCreateView(generics.CreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        ad = get_object_or_404(Advertisement, pk=self.kwargs["pk"])
+        serializer.save(ad=ad, user=self.request.user)
+        ad.calculate_ratings()
