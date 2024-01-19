@@ -26,7 +26,9 @@ class Advertisement(models.Model):
         decimal_places=2,
     )
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="advertisements"
+    )
     published = models.BooleanField(default=False)
     status = models.CharField(max_length=1, choices=STATUS_OPTIONS, default="D")
 
