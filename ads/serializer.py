@@ -33,6 +33,27 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         ]
 
 
+class AdvertisementModerationSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="advertisement-moderation-detail", lookup_field="pk"
+    )
+    publication_date = PublicationDateField()
+    category = serializers.ReadOnlyField(source="category.name")
+    owner = serializers.ReadOnlyField(source="owner.username")
+
+    class Meta:
+        model = Advertisement
+        fields = [
+            "title",
+            "description",
+            "category",
+            "price",
+            "publication_date",
+            "owner",
+            "url",
+        ]
+
+
 class AdvertisementStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement

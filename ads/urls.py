@@ -13,4 +13,14 @@ urlpatterns = [
         views.AdvertisementDetail.as_view(),
         name="advertisement-detail",
     ),
+    path("advertisement/<int:pk>/publish/", views.AdvertisementPublish.as_view()),
+    path("pending-advertisement/", views.AdvertisementModerationList.as_view()),
+    path(
+        "pending-advertisement/<int:pk>/",
+        views.AdvertisementModerationDetail.as_view(),
+        name="advertisement-moderation-detail",
+    ),
+    path(
+        "pending-advertisement/<int:pk>/approve/", views.AdvertisementApprove.as_view()
+    ),
 ]
