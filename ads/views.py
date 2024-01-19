@@ -25,6 +25,12 @@ class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAdminUser]
 
 
+class AllAdvertisementList(generics.ListAPIView):
+    queryset = Advertisement.objects.filter(status="A")
+    serializer_class = AdvertisementSerializer
+    permission_classes = [permissions.AllowAny]
+
+
 class AdvertisementList(generics.ListCreateAPIView):
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
