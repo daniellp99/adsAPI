@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
 
 from ads.models import Advertisement, Category
@@ -29,6 +30,8 @@ class AllAdvertisementList(generics.ListAPIView):
     queryset = Advertisement.objects.filter(status="A")
     serializer_class = AdvertisementSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["category"]
 
 
 class AdvertisementList(generics.ListCreateAPIView):
