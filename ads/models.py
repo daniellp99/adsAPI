@@ -31,13 +31,24 @@ class Advertisement(models.Model):
     )
     published = models.BooleanField(default=False)
     status = models.CharField(max_length=1, choices=STATUS_OPTIONS, default="D")
+    ratings = models.FloatField(default=0)
+
+    def calculate_ratings(self):
+        ratings_sum = self.comments.aggregate(models.Sum("rating"))["rating__sum"]
+        self.ratings = ratings_sum / self.comments.count()
+        self.save()
 
     class Meta:
         ordering = ["publication_date"]
 
 
 class Comment(models.Model):
-    ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE)
+    ad = models.ForeignKey(
+        Advertisement, on_delete=models.CASCADE, related_name="comments"
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     rating = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return f"{self.user} - {self.rating}"
