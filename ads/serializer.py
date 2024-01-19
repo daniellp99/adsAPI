@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-class PublicationDateField(serializers.Field):
+class PublicationDateField(serializers.ReadOnlyField):
     def to_representation(self, value):
         return value.strftime("%B %d, %Y")
 
@@ -23,7 +23,41 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ["title", "description", "price", "publication_date", "url"]
+        fields = [
+            "title",
+            "description",
+            "category",
+            "price",
+            "publication_date",
+            "url",
+        ]
+
+
+class AdvertisementStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advertisement
+        fields = [
+            "status",
+        ]
+
+
+class AdvertisementDetailSerializer(serializers.ModelSerializer):
+    publication_date = PublicationDateField()
+    category = serializers.ReadOnlyField(source="category.name")
+    owner = serializers.ReadOnlyField(source="owner.username")
+
+    class Meta:
+        model = Advertisement
+        fields = [
+            "title",
+            "description",
+            "price",
+            "publication_date",
+            "status",
+            "owner",
+            "category",
+        ]
+        read_only_fields = ["status"]
 
 
 class UserSerializer(serializers.ModelSerializer):

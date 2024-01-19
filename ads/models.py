@@ -1,6 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+STATUS_OPTIONS = [
+    ("D", "Draft"),
+    ("P", "Pending Approval"),
+    ("A", "Approved"),
+]
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -22,6 +28,7 @@ class Advertisement(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
+    status = models.CharField(max_length=1, choices=STATUS_OPTIONS, default="D")
 
     class Meta:
         ordering = ["publication_date"]
