@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from ads.models import Advertisement, Category
+from ads.models import Advertisement, Category, Comment
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -128,10 +128,20 @@ class AdvertisementStatusSerializer(serializers.ModelSerializer):
         ]
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Comment
+        fields = ["id", "text", "rating", "user"]
+
+
 class AdvertisementDetailSerializer(serializers.ModelSerializer):
     publication_date = PublicationDateField()
     category = serializers.ReadOnlyField(source="category.name")
     owner = serializers.ReadOnlyField(source="owner.username")
+    ratings = serializers.FloatField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Advertisement
@@ -143,5 +153,7 @@ class AdvertisementDetailSerializer(serializers.ModelSerializer):
             "status",
             "owner",
             "category",
+            "ratings",
+            "comments",
         ]
         read_only_fields = ["status"]
