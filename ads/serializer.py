@@ -80,14 +80,14 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             "publication_date",
             "url",
         ]
-        read_only_fields = ["user"]
+        read_only_fields = ["owner"]
 
     def create(self, validated_data):
-        validated_data["user"] = self.context["request"].user
+        validated_data["owner"] = self.context["request"].user
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        validated_data["user"] = self.context["request"].user
+        validated_data["owner"] = self.context["request"].user
         return super().update(instance, validated_data)
 
 
