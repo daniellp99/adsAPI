@@ -13,7 +13,7 @@ urlpatterns = [
     path("profile/update/", views.updateProfile, name="update-profile"),
     # Category
     path("category/", views.CategoryList.as_view()),
-    path("category/<int:pk>/", views.CategoryList.as_view()),
+    path("category/<int:pk>/", views.CategoryDetail.as_view()),
     # All Publish Ads
     path("advertisement/", views.AllAdvertisementList.as_view()),
     path(
